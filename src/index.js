@@ -11,8 +11,11 @@ board.set({
 		free: false,
 		dests: getDests(),
 		events: {
-			after: setMove
+			after: onMove
 		}
+	},
+	change: {
+		move: onDrop
 	}
 });
 
@@ -20,9 +23,9 @@ function getColor() {
 	return (chess.turn() === 'w') ? 'white' : 'black';
 }
 
-function setMove(src, dest) {
+function onMove(src, dest, meta) {
 	specialMove(src,dest);
-	chess.move({from: src, to: dest});
+	chess.move({from: src, to: dest, promotion: 'q'});
 	board.set({
 		turnColor: getColor(),
 		movable: {
@@ -30,15 +33,20 @@ function setMove(src, dest) {
 			dests: getDests()
 		}
 	});
+	setTimeout(onDrop, 200);
+}
+
+function onDrop(role,dest){
+	board.set({
+		fen: chess.fen()
+	});
 }
 
 //handle en passant capture and pawn promotion
 function specialMove(src,dest){
 	const flags = getFlags();
-	if(flags[src+dest] === 'e'){ 
-		//en passant
-		console.log("en passant");
-	} else if(flags[src+dest] === 'np' || flags[src+dest] === 'cp'){ 
+	//if(flags[src+dest] === 'e'){ //en passant} 
+	if(flags[src+dest] === 'np' || flags[src+dest] === 'cp'){ 
 		//pawn promotion
 		console.log("pawn promotion");
 	}
@@ -67,11 +75,3 @@ function getFlags() {
 	}
 	return flags;
 }
-
-
-//import {module} from 'angular';
-//ng-app="myApp" ng-controller="myCtrl"
-/*var app = module('myApp', []);
-app.controller('myCtrl', [ '$scope', function($scope) {
-
-}]);*/
