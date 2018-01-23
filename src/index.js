@@ -29,6 +29,7 @@ function refresh1(){
 			dests: getDests()
 		}
 	});
+	refreshHistory();
 }
 
 function refresh2(){
@@ -56,6 +57,17 @@ function getDests() {
 		dests[src].push(dest);
 	}
 	return dests;
+}
+
+function refreshHistory(){
+	let e = document.getElementById('history');
+	e.innerHTML = "";
+	let history = chess.history();
+	for(let i = 0; i < history.length; i++){
+		if(i%2 === 0) e.innerHTML += (i/2+1) + ". ";
+		e.innerHTML += history[i] + " ";
+		if(i%2 !== 0) e.innerHTML += "<br/>";
+	}
 }
 
 document.getElementById('flip').addEventListener("click",function(){

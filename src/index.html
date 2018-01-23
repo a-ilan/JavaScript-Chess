@@ -5,24 +5,58 @@
 	<body style="font-family: monospace">
 		<table>
 			<tr>
-				<td>
+				<td style="padding-right: 20px; padding-bottom: 20px;">
 					<div id="board"></div>
 				</td>
-				<td style="vertical-align:top; padding-left: 20px;">
-					<div>
-						Promote to:
-						<select id="promoteTo">
-							<option value="q">Queen</option>
-							<option value="r">Rook</option>
-							<option value="b">Bishop</option>
-							<option value="n">Knight</option>
-						</select>
-					<div/>
-					<div><button id="flip">FLIP</button></div>
-					<div><button id="reset">RESET</button></div>
-					<div><button id="undo">UNDO</button></div>
+				<td style="vertical-align:top;">
+					<table>
+						<tr>
+							<td>White:</td>
+							<td>
+								<select id="white">
+									<option value="p">Player</option>
+									<option value="p">Computer</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>Black:</td>
+							<td>
+								<select id="black">
+									<option value="p">Player</option>
+									<option value="p">Computer</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>Promote to:</td>
+							<td>
+								<select id="promoteTo">
+									<option value="q">Queen</option>
+									<option value="r">Rook</option>
+									<option value="b">Bishop</option>
+									<option value="n">Knight</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<div id="history" style="border: solid 1px gray; overflow:auto; width: 200px; height: 200px;"></div>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<div>
+									<button id="undo">UNDO</button>
+									<button id="reset">RESET</button>
+									<button id="save">SAVE</button>
+								</div>
+							</td>
+						</tr>
+					<table/>
 				</td>
 			</tr>
 		</table>
+		<div><button id="flip">FLIP</button></div>
 	</body>
 </html>
