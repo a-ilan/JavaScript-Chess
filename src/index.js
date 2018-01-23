@@ -35,6 +35,7 @@ function refresh1(){
 
 function refresh2(){
 	board.set({ fen: chess.fen() });
+	if(chess.game_over()) onGameover();
 }
 
 function getPromoteTo(){
@@ -71,6 +72,23 @@ function refreshHistory(){
 	}
 }
 
+function onGameover(){
+	document.getElementById('gameover-popup').style.visibility = "visible";
+	let e = document.getElementById('gameover-message');
+	if(chess.in_checkmate()){
+		let winner = chess.turn() === 'b'? 'White' : 'Black';
+		e.innerHTML = "Checkmate! " + winner + " wins.";
+	} else if(chess.in_stalemate()){
+		e.innerHTML = "Stalemate!";
+	} else if(chess.in_threefold_repetition()){
+		e.innerHTML = "Threefold repetition!";
+	} else if(chess.insufficient_material()){
+		e.innerHTML = "Insufficient material!";
+	} else if(chess.in_draw()){
+		e.innerHTML = "Draw!";
+	}
+}
+
 document.getElementById('flip').addEventListener("click",function(){
 	orientation = orientation === 'white'? 'black' : 'white';
 	board.set({ orientation: orientation });
@@ -97,8 +115,14 @@ document.getElementById('save').addEventListener("click",function(){
 	document.getElementById('fen').value = chess.fen();
 });
 
-document.getElementById('close-popup').addEventListener("click",function(){
+document.getElementById('close-save-popup').addEventListener("click",function(){
 	document.getElementById('save-popup').style.visibility = "hidden";
+	document.getElementById('gameover-popup').style.visibility = "hidden";
+});
+
+document.getElementById('close-gameover-popup').addEventListener("click",function(){
+	document.getElementById('save-popup').style.visibility = "hidden";
+	document.getElementById('gameover-popup').style.visibility = "hidden";
 });
 
 document.getElementById('pgn').addEventListener("click",function(){

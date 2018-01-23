@@ -28,9 +28,14 @@ body {
 	top: 50%;
 	left: 50%;
 	width: 300px;
-	height: 100px; 
+	height: 60px; 
 	border: solid 1px gray; 
 	transform: translate(-50%, -50%);
 	background-color: #ffffff;
 	z-index: 2;
+}
+
+#gameover-message {
+	margin: 20px;
+	text-align: center;
 }
