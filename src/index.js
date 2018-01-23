@@ -1,6 +1,7 @@
 'use strict';
 import {Chessground} from 'chessground';
 import './themes/chessground.css';
+import './style.css';
 var Chess = require("chess.js/chess");
 var chess = new Chess();
 var board = Chessground(document.getElementById('board'),{});
@@ -85,4 +86,25 @@ document.getElementById('reset').addEventListener("click",function(){
 	chess.reset();
 	refresh1();
 	refresh2();
+});
+
+document.getElementById('save').addEventListener("click",function(){
+	let white = document.getElementById('white').options[document.getElementById('white').selectedIndex].text;
+	let black = document.getElementById('black').options[document.getElementById('black').selectedIndex].text;
+	chess.header('White', white, 'Black', black);
+	document.getElementById('save-popup').style.visibility = "visible";
+	document.getElementById('pgn').innerHTML = chess.pgn();
+	document.getElementById('fen').value = chess.fen();
+});
+
+document.getElementById('close-popup').addEventListener("click",function(){
+	document.getElementById('save-popup').style.visibility = "hidden";
+});
+
+document.getElementById('pgn').addEventListener("click",function(){
+	document.getElementById('pgn').select();
+});
+
+document.getElementById('fen').addEventListener("click",function(){
+	document.getElementById('fen').select();
 });

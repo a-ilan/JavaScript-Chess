@@ -2,7 +2,7 @@
 <html>
 	<head>
 	</head>
-	<body style="font-family: monospace">
+	<body>
 		<table>
 			<tr>
 				<td style="padding-right: 20px; padding-bottom: 20px;">
@@ -41,7 +41,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div id="history" style="border: solid 1px gray; overflow:auto; width: 200px; height: 200px;"></div>
+								<div id="history"></div>
 							</td>
 						</tr>
 						<tr>
@@ -58,5 +58,21 @@
 			</tr>
 		</table>
 		<div><button id="flip">FLIP</button></div>
+		
+		<!-- POPUP -->
+		<div style= "position: relative;">
+			<div id="save-popup">
+				<button id="close-popup" style="float: right;">X</button>
+				<div style="margin: 20px;">
+					PGN<br/>
+					<textarea id="pgn" style="width: 250px; height: 190px; resize: none;" readonly>
+					</textarea>
+				</div>
+				<div style="margin: 20px; position: absolute; bottom: 0;">
+					FEN<br/>
+					<input id="fen" style="width: 250px;" readonly></input>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>
