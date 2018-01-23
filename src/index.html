@@ -2,20 +2,25 @@
 <html>
 	<head>
 	</head>
-	<body>
+	<body style="font-family: monospace">
 		<table>
 			<tr>
 				<td>
 					<div id="board"></div>
 				</td>
 				<td style="vertical-align:top; padding-left: 20px;">
-					Promote to:
-					<select id="promoteTo">
-						<option value="q">Queen</option>
-						<option value="r">Rook</option>
-						<option value="b">Bishop</option>
-						<option value="n">Knight</option>
-					</select>
+					<div>
+						Promote to:
+						<select id="promoteTo">
+							<option value="q">Queen</option>
+							<option value="r">Rook</option>
+							<option value="b">Bishop</option>
+							<option value="n">Knight</option>
+						</select>
+					<div/>
+					<div><button id="flip">FLIP</button></div>
+					<div><button id="reset">RESET</button></div>
+					<div><button id="undo">UNDO</button></div>
 				</td>
 			</tr>
 		</table>

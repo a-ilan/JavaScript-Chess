@@ -4,8 +4,9 @@ import './themes/chessground.css';
 var Chess = require("chess.js/chess");
 var chess = new Chess();
 var board = Chessground(document.getElementById('board'),{});
+var orientation = 'white';
 board.set({
-	orientation: 'white',
+	orientation: orientation,
 	movable: {
 		color: 'white',
 		free: false,
@@ -13,14 +14,25 @@ board.set({
 		events: {
 			after: onMove
 		}
-	},
-	change: {
-		move: onDrop
 	}
 });
 
 function getColor() {
 	return (chess.turn() === 'w') ? 'white' : 'black';
+}
+
+function refresh1(){
+	board.set({
+		turnColor: getColor(),
+		movable: {
+			color: getColor(),
+			dests: getDests()
+		}
+	});
+}
+
+function refresh2(){
+	board.set({ fen: chess.fen() });
 }
 
 function getPromoteTo(){
@@ -30,30 +42,8 @@ function getPromoteTo(){
 
 function onMove(src, dest, meta) {
 	chess.move({from: src, to: dest, promotion: getPromoteTo()});
-	board.set({
-		turnColor: getColor(),
-		movable: {
-			color: getColor(),
-			dests: getDests()
-		}
-	});
-	setTimeout(onDrop, 200);
-}
-
-function onDrop(role,dest){
-	board.set({
-		fen: chess.fen()
-	});
-}
-
-//handle en passant capture and pawn promotion
-function specialMove(src,dest){
-	const flags = getFlags();
-	//if(flags[src+dest] === 'e'){ //en passant} 
-	if(flags[src+dest] === 'np' || flags[src+dest] === 'cp'){ 
-		//pawn promotion
-		console.log("pawn promotion");
-	}
+	refresh1();
+	setTimeout(refresh2, 200);
 }
 
 function getDests() {
@@ -68,14 +58,19 @@ function getDests() {
 	return dests;
 }
 
-function getFlags() {
-	const flags = {};
-	const moves = chess.moves({verbose: true});
-	for(let i = 0; i < moves.length; i++){
-		const src = moves[i].from;
-		const dest = moves[i].to;
-		const flag = moves[i].flags;
-		flags[src+dest] = flag;
-	}
-	return flags;
-}
+document.getElementById('flip').addEventListener("click",function(){
+	orientation = orientation === 'white'? 'black' : 'white';
+	board.set({ orientation: orientation });
+});
+
+document.getElementById('undo').addEventListener("click",function(){
+	chess.undo();
+	refresh1();
+	refresh2();
+});
+
+document.getElementById('reset').addEventListener("click",function(){
+	chess.reset();
+	refresh1();
+	refresh2();
+});
