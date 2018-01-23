@@ -23,9 +23,13 @@ function getColor() {
 	return (chess.turn() === 'w') ? 'white' : 'black';
 }
 
+function getPromoteTo(){
+	let e = document.getElementById('promoteTo');
+	return e.options[e.selectedIndex].value;
+}
+
 function onMove(src, dest, meta) {
-	specialMove(src,dest);
-	chess.move({from: src, to: dest, promotion: 'q'});
+	chess.move({from: src, to: dest, promotion: getPromoteTo()});
 	board.set({
 		turnColor: getColor(),
 		movable: {
