@@ -1,9 +1,12 @@
 'use strict';
 import {Chessground} from 'chessground';
+var Chess = require("chess.js/chess");
+var ai = require("./ai/minimax.js");
 import './themes/chessground.css';
 import './style.css';
-var Chess = require("chess.js/chess");
-var chess = new Chess();
+var game = new Chess();
+var game_history = [];
+var current_move = -1;
 var board = Chessground(document.getElementById('board'),{});
 var orientation = 'white';
 board.set({
@@ -19,23 +22,31 @@ board.set({
 });
 
 function getColor() {
-	return (chess.turn() === 'w') ? 'white' : 'black';
+	return (game.turn() === 'w') ? 'white' : 'black';
 }
 
-function refresh1(){
+function refresh(delay = 200){
+	let gameover = game.game_over();
+	
+	//refresh movable color
 	board.set({
 		turnColor: getColor(),
-		movable: {
-			color: getColor(),
-			dests: getDests()
-		}
+		movable: { color: getColor() }
 	});
+	
+	//refresh available moves
+	if(!gameover){
+		board.set({ movable: { dests: getDests() } });
+	}
+	
+	//refresh history
 	refreshHistory();
-}
-
-function refresh2(){
-	board.set({ fen: chess.fen() });
-	if(chess.game_over()) onGameover();
+	
+	//sync the game with the board
+	setTimeout(function(){
+		board.set({ fen: game.fen() });
+		if(gameover) onGameover();
+	}, delay);
 }
 
 function getPromoteTo(){
@@ -44,17 +55,18 @@ function getPromoteTo(){
 }
 
 function onMove(src, dest, meta) {
-	chess.move({from: src, to: dest, promotion: getPromoteTo()});
-	refresh1();
-	setTimeout(refresh2, 200);
+	game.move({from: src, to: dest, promotion: getPromoteTo()});
+	game_history = game.history();
+	current_move = game_history.length-1;
+	refresh(200);
 }
 
 function getDests() {
 	const dests = {};
-	const moves = chess.moves({verbose: true});
-	for(let i = 0; i < moves.length; i++){
-		const src = moves[i].from;
-		const dest = moves[i].to;
+	const moves = game.moves({verbose: true});
+	for(let move of moves){
+		const src = move.from;
+		const dest = move.to;
 		if(dests[src] === undefined) dests[src] = [];
 		dests[src].push(dest);
 	}
@@ -64,10 +76,11 @@ function getDests() {
 function refreshHistory(){
 	let e = document.getElementById('history');
 	e.innerHTML = "";
-	let history = chess.history();
+	let history = game_history;
 	for(let i = 0; i < history.length; i++){
 		if(i%2 === 0) e.innerHTML += (i/2+1) + ". ";
-		e.innerHTML += history[i] + " ";
+		if(current_move === i) e.innerHTML += "<b>" + history[i] + "</b> ";
+		else e.innerHTML += history[i] + " ";
 		if(i%2 !== 0) e.innerHTML += "<br/>";
 	}
 }
@@ -75,16 +88,16 @@ function refreshHistory(){
 function onGameover(){
 	document.getElementById('gameover-popup').style.visibility = "visible";
 	let e = document.getElementById('gameover-message');
-	if(chess.in_checkmate()){
-		let winner = chess.turn() === 'b'? 'White' : 'Black';
+	if(game.in_checkmate()){
+		let winner = game.turn() === 'b'? 'White' : 'Black';
 		e.innerHTML = "Checkmate! " + winner + " wins.";
-	} else if(chess.in_stalemate()){
+	} else if(game.in_stalemate()){
 		e.innerHTML = "Stalemate!";
-	} else if(chess.in_threefold_repetition()){
+	} else if(game.in_threefold_repetition()){
 		e.innerHTML = "Threefold repetition!";
-	} else if(chess.insufficient_material()){
+	} else if(game.insufficient_material()){
 		e.innerHTML = "Insufficient material!";
-	} else if(chess.in_draw()){
+	} else if(game.in_draw()){
 		e.innerHTML = "Draw!";
 	}
 }
@@ -94,25 +107,38 @@ document.getElementById('flip').addEventListener("click",function(){
 	board.set({ orientation: orientation });
 });
 
+document.getElementById('ai').addEventListener("click",function(){
+	ai(game,1);
+	game_history = game.history();
+	current_move = game_history.length-1;
+	refresh(0);
+});
+
 document.getElementById('undo').addEventListener("click",function(){
-	chess.undo();
-	refresh1();
-	refresh2();
+	game.undo();
+	if(current_move > -1) current_move--;
+	refresh(0);
+});
+
+document.getElementById('redo').addEventListener("click",function(){
+	if(current_move < game_history.length - 1){
+		if(game.move(game_history[current_move+1])){
+			current_move++;
+			refresh(0);
+		}
+	}
 });
 
 document.getElementById('reset').addEventListener("click",function(){
-	chess.reset();
-	refresh1();
-	refresh2();
+	game.reset();
+	current_move = -1;
+	refresh(0);
 });
 
 document.getElementById('save').addEventListener("click",function(){
-	let white = document.getElementById('white').options[document.getElementById('white').selectedIndex].text;
-	let black = document.getElementById('black').options[document.getElementById('black').selectedIndex].text;
-	chess.header('White', white, 'Black', black);
 	document.getElementById('save-popup').style.visibility = "visible";
-	document.getElementById('pgn').innerHTML = chess.pgn();
-	document.getElementById('fen').value = chess.fen();
+	document.getElementById('pgn').innerHTML = game.pgn();
+	document.getElementById('fen').value = game.fen();
 });
 
 document.getElementById('close-save-popup').addEventListener("click",function(){

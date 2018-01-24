@@ -48,8 +48,8 @@
 							<td colspan="2">
 								<div>
 									<button id="undo">UNDO</button>
+									<button id="redo">REDO</button>
 									<button id="reset">RESET</button>
-									<button id="save">SAVE</button>
 								</div>
 							</td>
 						</tr>
@@ -57,7 +57,11 @@
 				</td>
 			</tr>
 		</table>
-		<div><button id="flip">FLIP</button></div>
+		<div>
+			<button id="save">SAVE</button> 
+			<button id="flip">FLIP</button>
+			<button id="ai">AI</button>
+		</div>
 		
 		<!-- POPUP -->
 		<div style= "position: relative;">
@@ -65,7 +69,7 @@
 				<button id="close-save-popup" style="float: right;">X</button>
 				<div style="margin: 20px;">
 					PGN<br/>
-					<textarea id="pgn" style="width: 250px; height: 190px; resize: none;" readonly>
+					<textarea id="pgn" style="width: 250px; height: 90px; resize: none;" readonly>
 					</textarea>
 				</div>
 				<div style="margin: 20px; position: absolute; bottom: 0;">
