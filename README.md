@@ -1,3 +1,5 @@
+[Play now!](https://tiilan.github.io/Javascript-Chess/dist/)
+
 ### To run
 ``` bash
 npm install        # install dependencies
