@@ -75,7 +75,7 @@ function aiMove(){
 	} else if(player === 'c2'){
 		ai(game,1,2000,6,1000);
 	} else {
-		ai(game,1,10000,10,2000);
+		ai(game,2,10000,10,2000);
 	}
 	
 	game_history = game.history();
