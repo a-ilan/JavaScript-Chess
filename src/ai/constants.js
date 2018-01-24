@@ -124,5 +124,76 @@ constants.openings = {
 	}
 }
 
+constants.move_ordering_score = {
+	n: { // non capture
+		p: 0,
+		b: 1,
+		n: 1,
+		r: 2,
+		q: 4,
+		k: 3
+	},
+	b: 1, //pawn push 2 squares
+	e: 6, //en passant
+	k: 5, //castling
+	q: 5,
+	p: { //promote
+		q: 20,
+		r: -1,
+		b: -2,
+		n: -2
+	},
+	c: { //capture
+		p: { //pawn capture
+			p: 6,
+			b: 10, //pawn capture bishop
+			n: 10,
+			r: 15,
+			q: 20,
+			k: 20
+		},
+		b: {
+			p: 5,
+			b: 6,
+			n: 6,
+			r: 10,
+			q: 19,
+			k: 20
+		},
+		n: {
+			p: 5,
+			b: 6,
+			n: 6,
+			r: 15,
+			q: 19,
+			k: 20
+		},
+		r: {
+			p: 14,
+			b: 15,
+			n: 16,
+			r: 17,
+			q: 18,
+			k: 20
+		}, 
+		q: {
+			p: 13,
+			b: 14,
+			n: 15,
+			r: 16,
+			q: 17,
+			k: 20
+		},
+		k: {
+			p: 5,
+			b: 5,
+			n: 5,
+			r: 5,
+			q: 16,
+			k: 20
+		}, 
+	}
+}
+
 constants.MAX = 9999;
 constants.MIN = -9999;

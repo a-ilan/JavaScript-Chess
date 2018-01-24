@@ -1,7 +1,7 @@
 'use strict';
 import {Chessground} from 'chessground';
 var Chess = require("chess.js/chess");
-var ai = require("./ai/minimax.js");
+var ai = require("./ai/negamax.js");
 import './themes/chessground.css';
 import './style.css';
 var game = new Chess();
@@ -59,6 +59,31 @@ function onMove(src, dest, meta) {
 	game_history = game.history();
 	current_move = game_history.length-1;
 	refresh(200);
+	setTimeout(function(){
+		aiMove();
+	},300);
+}
+
+function aiMove(){
+	if(game.game_over()) return;
+	let e = game.turn() == 'w'? document.getElementById('white') : document.getElementById('black');
+	let player = e.options[e.selectedIndex].value;
+	if(player === 'p') return;
+	
+	if(player === 'c1'){
+		ai(game,1,500,3,500);
+	} else if(player === 'c2'){
+		ai(game,1,2000,6,1000);
+	} else {
+		ai(game,1,10000,10,2000);
+	}
+	
+	game_history = game.history();
+	current_move = game_history.length-1;
+	refresh(0);
+	setTimeout(function(){
+		aiMove();
+	},400);
 }
 
 function getDests() {
@@ -108,10 +133,19 @@ document.getElementById('flip').addEventListener("click",function(){
 });
 
 document.getElementById('ai').addEventListener("click",function(){
-	ai(game,1);
+	ai(game,3,10000,10,2000);
 	game_history = game.history();
 	current_move = game_history.length-1;
 	refresh(0);
+});
+
+document.getElementById('white').addEventListener("change",function(){
+	aiMove();
+});
+
+document.getElementById('black').value="c1";
+document.getElementById('black').addEventListener("change",function(){
+	aiMove();
 });
 
 document.getElementById('undo').addEventListener("click",function(){
