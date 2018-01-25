@@ -48,16 +48,16 @@ function best_move(game,evaluate_func){
 }
 
 function negamax(game,alpha,beta,depth,time,depth2,time2){
-	//if(game.game_over()) return eval_gameover(game);
+	if(game.game_over()) return eval_gameover(game,depth);
 	if(time < (new Date).getTime()) return quiesce(game,alpha,beta,depth2,time+time2);
 	if ( depth == 0 ) return quiesce(game,alpha,beta,depth2,time+time2); //evaluate(game);
 	
 	let best_score = constants.MIN;
-	const moves = game.moves({legal:false, verbose: true});
+	const moves = game.moves({verbose: true});
 	order_moves(moves);
 	for(let move of moves){
 		if(game.move({from: move.from, to: move.to, promotion: move.promotion}) == null) continue;
-		const score = -negamax(game,-beta,-alpha,depth - 1);
+		const score = -negamax(game,-beta,-alpha,depth - 1,time,depth2,time2);
 		game.undo();
 		if(score >= beta) return score;
 		if(score > best_score){
@@ -107,12 +107,12 @@ function quiesce(game,alpha,beta,depth,time){
 	if(time < (new Date).getTime()) return stand_pat;
 	if(depth == 0) return stand_pat;
 	
-	const moves = game.moves({ legal:false, verbose: true });
+	const moves = game.moves({ verbose: true }); //legal:false
 	order_moves(moves);
 	for(let move of moves){
 		if(move.captured != undefined){ //if move is a capture
 			if(game.move({from: move.from, to: move.to, promotion: move.promotion}) == null) continue;
-			const score = -quiesce(game,-beta,-alpha,depth-1);
+			const score = -quiesce(game,-beta,-alpha,depth-1,time);
 			game.undo();
 			
 			if( score >= beta ) return beta;
@@ -122,9 +122,9 @@ function quiesce(game,alpha,beta,depth,time){
 	return alpha;
 }
 
-function eval_gameover(game){
+function eval_gameover(game,depth){
 	if(game.in_checkmate()){
-		return constants.MIN; //if in checkmate
+		return constants.MIN-depth; //if in checkmate
 	} else { //game in a draw
 		return -evaluate(game); //if winning, then draw is bad
 	}

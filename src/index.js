@@ -59,9 +59,7 @@ function onMove(src, dest, meta) {
 	game_history = game.history();
 	current_move = game_history.length-1;
 	refresh(200);
-	setTimeout(function(){
-		aiMove();
-	},300);
+	aiMove();
 }
 
 function aiMove(){
@@ -70,18 +68,18 @@ function aiMove(){
 	let player = e.options[e.selectedIndex].value;
 	if(player === 'p') return;
 	
-	if(player === 'c1'){
-		ai(game,1,500,3,500);
-	} else if(player === 'c2'){
-		ai(game,1,2000,6,1000);
-	} else {
-		ai(game,2,10000,10,2000);
-	}
-	
-	game_history = game.history();
-	current_move = game_history.length-1;
-	refresh(0);
 	setTimeout(function(){
+		if(player === 'c1'){
+			ai(game,1,500,3,500);
+		} else if(player === 'c2'){
+			ai(game,1,2000,4,1000);
+		} else {
+			ai(game,2,10000,5,2000);
+		}
+		
+		game_history = game.history();
+		current_move = game_history.length-1;
+		refresh(0);
 		aiMove();
 	},400);
 }
@@ -133,10 +131,11 @@ document.getElementById('flip').addEventListener("click",function(){
 });
 
 document.getElementById('ai').addEventListener("click",function(){
-	ai(game,3,10000,10,2000);
+	ai(game,2,1000,5,2000);
 	game_history = game.history();
 	current_move = game_history.length-1;
 	refresh(0);
+	aiMove();
 });
 
 document.getElementById('white').addEventListener("change",function(){
