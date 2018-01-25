@@ -7,19 +7,10 @@ import './style.css';
 var game = new Chess();
 var game_history = [];
 var current_move = -1;
-var board = Chessground(document.getElementById('board'),{});
+var last_position = "";
+var board = Chessground(document.getElementById('board'),{movable:{free: false, events: {after: onMove}}});
 var orientation = 'white';
-board.set({
-	orientation: orientation,
-	movable: {
-		color: 'white',
-		free: false,
-		dests: getDests(),
-		events: {
-			after: onMove
-		}
-	}
-});
+refresh(0);
 
 function getColor() {
 	return (game.turn() === 'w') ? 'white' : 'black';
@@ -56,32 +47,36 @@ function getPromoteTo(){
 
 function onMove(src, dest, meta) {
 	game.move({from: src, to: dest, promotion: getPromoteTo()});
+	last_position = game.pgn();
 	game_history = game.history();
 	current_move = game_history.length-1;
 	refresh(200);
-	aiMove();
 }
 
+setTimeout(aiMove,1000);
 function aiMove(){
-	if(game.game_over()) return;
 	let e = game.turn() == 'w'? document.getElementById('white') : document.getElementById('black');
 	let player = e.options[e.selectedIndex].value;
-	if(player === 'p') return;
+	if(player === 'p') {
+		setTimeout(aiMove,1000);
+		return;
+	}
+	if(game.game_over()) {
+		setTimeout(aiMove,1000);
+		return;
+	}
+	if(player === 'c1'){
+		ai.move(game,1,500,3,500);
+	} else if(player === 'c2'){
+		ai.move(game,1,2000,4,1000);
+	} else {
+		ai.move(game,2,10000,5,2000);
+	}
 	
-	setTimeout(function(){
-		if(player === 'c1'){
-			ai(game,1,500,3,500);
-		} else if(player === 'c2'){
-			ai(game,1,2000,4,1000);
-		} else {
-			ai(game,2,10000,5,2000);
-		}
-		
-		game_history = game.history();
-		current_move = game_history.length-1;
-		refresh(0);
-		aiMove();
-	},400);
+	game_history = game.history();
+	current_move = game_history.length-1;
+	refresh(0);
+	setTimeout(aiMove,500);
 }
 
 function getDests() {
@@ -131,29 +126,30 @@ document.getElementById('flip').addEventListener("click",function(){
 });
 
 document.getElementById('ai').addEventListener("click",function(){
-	ai(game,2,1000,5,2000);
+	ai.move(game,0,1000,5,2000);
 	game_history = game.history();
 	current_move = game_history.length-1;
 	refresh(0);
-	aiMove();
 });
 
 document.getElementById('white').addEventListener("change",function(){
-	aiMove();
 });
 
 document.getElementById('black').value="c1";
 document.getElementById('black').addEventListener("change",function(){
-	aiMove();
 });
 
 document.getElementById('undo').addEventListener("click",function(){
+	document.getElementById('black').value="p";
+	document.getElementById('white').value="p";
 	game.undo();
 	if(current_move > -1) current_move--;
 	refresh(0);
 });
 
 document.getElementById('redo').addEventListener("click",function(){
+	document.getElementById('black').value="p";
+	document.getElementById('white').value="p";
 	if(current_move < game_history.length - 1){
 		if(game.move(game_history[current_move+1])){
 			current_move++;
@@ -163,8 +159,18 @@ document.getElementById('redo').addEventListener("click",function(){
 });
 
 document.getElementById('reset').addEventListener("click",function(){
+	document.getElementById('black').value="p";
+	document.getElementById('white').value="p";
 	game.reset();
 	current_move = -1;
+	refresh(0);
+});
+
+document.getElementById('end').addEventListener("click",function(){
+	document.getElementById('black').value="p";
+	document.getElementById('white').value="p";
+	game.load_pgn(last_position);
+	current_move = game_history.length-1;
 	refresh(0);
 });
 
