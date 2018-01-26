@@ -74,6 +74,7 @@ function aiMove(){
 		ai.move(game,2,3,10000);
 	}
 	
+	last_position = game.pgn();
 	game_history = game.history();
 	current_move = game_history.length-1;
 	refresh(0);
@@ -98,7 +99,7 @@ function refreshHistory(){
 	let history = game_history;
 	for(let i = 0; i < history.length; i++){
 		if(i%2 === 0) e.innerHTML += (i/2+1) + ". ";
-		if(current_move === i) e.innerHTML += "<b>" + history[i] + "</b> ";
+		if(current_move === i) e.innerHTML += "<span style='background-color: yellow'>" + history[i] + "</span> ";
 		else e.innerHTML += history[i] + " ";
 		if(i%2 !== 0) e.innerHTML += "<br/>";
 	}
