@@ -9,30 +9,34 @@ body {
 	height: 200px;
 }
 
-#save-popup {
-	visibility: hidden;
-	position: fixed; 
-	top: 50%;
-	left: 50%;
-	width: 300px;
-	height: 200px; 
+.popup {
+	visibility: hidden; 
+	position: absolute; 
+	top: 200px;
+	left: 200px;
 	border: solid 1px gray; 
 	transform: translate(-50%, -50%);
 	background-color: #ffffff;
 	z-index: 2;
 }
 
+.close-popup{
+	float: right;
+}
+
+#save-popup {
+	width: 300px;
+	height: 200px;
+}
+
+#load-popup {
+	width: 300px;
+	height: 200px;
+}
+
 #gameover-popup {
-	visibility: hidden;
-	position: fixed; 
-	top: 50%;
-	left: 50%;
 	width: 300px;
 	height: 60px; 
-	border: solid 1px gray; 
-	transform: translate(-50%, -50%);
-	background-color: #ffffff;
-	z-index: 2;
 }
 
 #gameover-message {

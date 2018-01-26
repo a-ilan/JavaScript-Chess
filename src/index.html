@@ -61,33 +61,44 @@
 			</tr>
 		</table>
 		<div>
-			<button id="save">SAVE</button> 
+			<button id="save">SAVE</button>
+			<button id="load">LOAD</button> 
 			<button id="flip">FLIP</button>
 			<button id="ai">AI</button>
 		</div>
 		
-		<!-- POPUP -->
-		<div style= "position: relative;">
-			<div id="save-popup">
-				<button id="close-save-popup" style="float: right;">X</button>
-				<div style="margin: 20px;">
-					PGN<br/>
-					<textarea id="pgn" style="width: 250px; height: 90px; resize: none;" readonly>
-					</textarea>
-				</div>
-				<div style="margin: 20px; position: absolute; bottom: 0;">
-					FEN<br/>
-					<input id="fen" style="width: 250px;" readonly></input>
-				</div>
+		<!-- POPUPS -->
+		<div id="save-popup" class="popup">
+			<button class="close-popup">X</button>
+			<div style="margin: 20px;">
+				PGN<br/>
+				<textarea id="pgn" style="width: 250px; height: 90px; resize: none;" readonly>
+				</textarea>
+			</div>
+			<div style="margin: 20px; position: absolute; bottom: 0;">
+				FEN<br/>
+				<input id="fen" style="width: 250px;" readonly></input>
 			</div>
 		</div>
 		
-		<!-- POPUP -->
-		<div style= "position: relative;">
-			<div id="gameover-popup">
-				<button id="close-gameover-popup" style="float: right;">X</button>
-				<div id="gameover-message">
-				</div>
+		<div id="load-popup" class="popup">
+			<button class="close-popup">X</button>
+			<div style="margin: 20px;">
+				PGN<br/>
+				<textarea id="load-pgn-field" style="width: 250px; height: 50px; resize: none;">
+				</textarea>
+				<button id="load-pgn-btn">LOAD</button>
+			</div>
+			<div style="margin: 20px; position: absolute; bottom: 0;">
+				FEN<br/>
+				<input id="load-fen-field" style="width: 250px;"></input>
+				<button id="load-fen-btn">LOAD</button>
+			</div>
+		</div>
+		
+		<div id="gameover-popup" class="popup">
+			<button class="close-popup">X</button>
+			<div id="gameover-message">
 			</div>
 		</div>
 	</body>

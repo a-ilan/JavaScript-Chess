@@ -37,6 +37,7 @@ function refresh(delay = 200){
 	setTimeout(function(){
 		board.set({ fen: game.fen() });
 		if(gameover) onGameover();
+		else onNotGameover();
 	}, delay);
 }
 
@@ -66,11 +67,11 @@ function aiMove(){
 		return;
 	}
 	if(player === 'c1'){
-		ai.move(game,1,500,3,500);
+		ai.move(game,1,2,500);
 	} else if(player === 'c2'){
-		ai.move(game,1,2000,4,1000);
+		ai.move(game,1,4,2000);
 	} else {
-		ai.move(game,2,10000,5,2000);
+		ai.move(game,2,3,10000);
 	}
 	
 	game_history = game.history();
@@ -120,13 +121,17 @@ function onGameover(){
 	}
 }
 
+function onNotGameover(){
+	document.getElementById('gameover-popup').style.visibility = "hidden";
+}
+
 document.getElementById('flip').addEventListener("click",function(){
 	orientation = orientation === 'white'? 'black' : 'white';
 	board.set({ orientation: orientation });
 });
 
 document.getElementById('ai').addEventListener("click",function(){
-	ai.move(game,0,1000,5,2000);
+	ai.move(game,0,5,1000);
 	game_history = game.history();
 	current_move = game_history.length-1;
 	refresh(0);
@@ -176,19 +181,23 @@ document.getElementById('end').addEventListener("click",function(){
 
 document.getElementById('save').addEventListener("click",function(){
 	document.getElementById('save-popup').style.visibility = "visible";
+	document.getElementById('load-popup').style.visibility = "hidden";
 	document.getElementById('pgn').innerHTML = game.pgn();
 	document.getElementById('fen').value = game.fen();
 });
 
-document.getElementById('close-save-popup').addEventListener("click",function(){
+document.getElementById('load').addEventListener("click",function(){
+	document.getElementById('load-popup').style.visibility = "visible";
 	document.getElementById('save-popup').style.visibility = "hidden";
-	document.getElementById('gameover-popup').style.visibility = "hidden";
+	document.getElementById('load-pgn-field').value = "";
+	document.getElementById('load-fen-field').value = "";
 });
 
-document.getElementById('close-gameover-popup').addEventListener("click",function(){
-	document.getElementById('save-popup').style.visibility = "hidden";
-	document.getElementById('gameover-popup').style.visibility = "hidden";
-});
+Array.from(document.getElementsByClassName('close-popup')).forEach(
+	e => e.addEventListener("click",function(){
+		Array.from(document.getElementsByClassName('popup')).forEach(e => e.style.visibility = "hidden");
+	})
+);
 
 document.getElementById('pgn').addEventListener("click",function(){
 	document.getElementById('pgn').select();
@@ -196,4 +205,26 @@ document.getElementById('pgn').addEventListener("click",function(){
 
 document.getElementById('fen').addEventListener("click",function(){
 	document.getElementById('fen').select();
+});
+
+document.getElementById('load-pgn-btn').addEventListener("click",function(){
+	let pgn = document.getElementById('load-pgn-field').value;
+	let success = game.load_pgn(pgn);
+	if(success){
+		game_history = game.history();
+		current_move = game_history.length-1;
+		last_position = pgn;
+		refresh(0);
+	}
+});
+
+document.getElementById('load-fen-btn').addEventListener("click",function(){
+	let fen = document.getElementById('load-fen-field').value;
+	let success = game.load(fen);
+	if(success){
+		game_history = [];
+		current_move = -1;
+		last_position = game.pgn();
+		refresh(0);
+	}
 });

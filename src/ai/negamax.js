@@ -3,7 +3,7 @@ const constants = require('./constants');
 let ai = {};
 module.exports = ai;
 
-function move(game,depth,max_time,depth2,time2){
+function move(game,depth,depth2,max_time){
 	//openings
 	let position = game.fen();
 	let opening_moves = constants.cahced_openings[position];
@@ -16,49 +16,57 @@ function move(game,depth,max_time,depth2,time2){
 	let cached_scores = {};
 	
 	//minimax, alpha-beta prunning, negamax
-	const time_limit = (new Date).getTime() + max_time;
-	let bestmove = best_move(game, (game)=> negamax(game,constants.MIN,constants.MAX,depth,time_limit,depth2,time2,cached_scores));
+	const time = (new Date).getTime() + max_time;
+	let bestmove = best_move(game, time, (game)=> negamax(game,constants.MIN,constants.MAX,depth,depth2,cached_scores));
 	game.move({from: bestmove.from, to: bestmove.to, promotion: bestmove.promotion});
 }
 ai.move = move;
 
-function best_move(game,evaluate_func){
+function best_move(game, time, evaluate_func){
 	const moves = game.moves({verbose:true});
 	order_moves(moves);
 	let best_score = constants.MIN-1;
-	let best_move = null;
+	let best_moves = [];
 	let turn = game.turn();
 	
-	for(let move of moves){
+	let i = 0;
+	for(i = 0; i < moves.length; i++){
+		let move = moves[i];
+		
 		game.move({from: move.from, to: move.to, promotion: move.promotion});
 		let score = -evaluate_func(game);
 		game.undo();
 		
 		if(score > best_score){
 			best_score = score;
-			best_move = move;
+			best_moves = [move];
+		} else if(score === best_score){
+			best_moves.push(move);
+		}
+		
+		if(time < (new Date).getTime()) {
+			break;
 		}
 	}
 	
-	return best_move;
+	console.log("ai: " + (i/moves.length*100) + "% " + i);
+	return best_moves[Math.floor(Math.random()*best_moves.length)];
 }
 
-function negamax(game,alpha,beta,depth,time,depth2,time2,cached_scores){
+function negamax(game,alpha,beta,depth,depth2,cached_scores){
 	if(game.game_over()) return eval_gameover(game,depth);
-	if(time < (new Date).getTime()) return quiesce(game,alpha,beta,depth2,time+time2,cached_scores);
-	if ( depth == 0 ) return quiesce(game,alpha,beta,depth2,time+time2,cached_scores); //evaluate(game);
-
+	if ( depth == 0 ) return quiesce(game,alpha,beta,depth2,cached_scores); //evaluate(game);
 	
 	let best_score = constants.MIN;
 	const moves = game.moves({verbose: true});
 	order_moves(moves);
 	for(let move of moves){
-		if(game.move({from: move.from, to: move.to, promotion: move.promotion}) == null) continue;
+		game.move({from: move.from, to: move.to, promotion: move.promotion});
 		
 		let position = game.fen();
 		let score = cached_scores[position];
 		if(score === undefined){
-			score = -negamax(game,-beta,-alpha,depth - 1,time,depth2,time2,cached_scores);
+			score = -negamax(game,-beta,-alpha,depth-1,depth2,cached_scores);
 			cached_scores[position] = score;
 		}
 		
@@ -75,23 +83,22 @@ function negamax(game,alpha,beta,depth,time,depth2,time2,cached_scores){
 }
 
 //Quiescence Search
-function quiesce(game,alpha,beta,depth,time,cached_scores){
+function quiesce(game,alpha,beta,depth,cached_scores){
 	let stand_pat = evaluate(game);
 	if(stand_pat >= beta) return beta;
 	if(alpha < stand_pat) alpha = stand_pat;
-	if(time < (new Date).getTime()) return stand_pat;
 	if(depth == 0) return stand_pat;
 	
 	const moves = game.moves({ verbose: true }); //legal:false
 	order_moves(moves);
 	for(let move of moves){
 		if(move.captured != undefined){ //if move is a capture
-			if(game.move({from: move.from, to: move.to, promotion: move.promotion}) == null) continue;
+			game.move({from: move.from, to: move.to, promotion: move.promotion});
 			
 			let position = game.fen();
 			let score = cached_scores[position];
 			if(score === undefined){
-				score = -quiesce(game,-beta,-alpha,depth-1,time,cached_scores);
+				score = -quiesce(game,-beta,-alpha,depth-1,cached_scores);
 				cached_scores[position] = score;
 			}
 			
