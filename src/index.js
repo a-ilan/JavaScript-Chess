@@ -208,6 +208,8 @@ document.getElementById('fen').addEventListener("click",function(){
 });
 
 document.getElementById('load-pgn-btn').addEventListener("click",function(){
+	document.getElementById('black').value="p";
+	document.getElementById('white').value="p";
 	let pgn = document.getElementById('load-pgn-field').value;
 	let success = game.load_pgn(pgn);
 	if(success){
@@ -219,11 +221,13 @@ document.getElementById('load-pgn-btn').addEventListener("click",function(){
 });
 
 document.getElementById('load-fen-btn').addEventListener("click",function(){
+	document.getElementById('black').value="p";
+	document.getElementById('white').value="p";
 	let fen = document.getElementById('load-fen-field').value;
 	let success = game.load(fen);
 	if(success){
-		game_history = [];
-		current_move = -1;
+		game_history = game.history();
+		current_move = game_history.length-1;
 		last_position = game.pgn();
 		refresh(0);
 	}
