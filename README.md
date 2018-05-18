@@ -1,4 +1,4 @@
-[Play now!](https://tiilan.github.io/JavaScript-Chess/dist/)
+[Play now!](https://a-ilan.github.io/JavaScript-Chess/dist/)
 
 ### To run
 ``` bash
